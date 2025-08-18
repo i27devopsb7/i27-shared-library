@@ -18,7 +18,7 @@ def call(Map pipelineParams) {
             // read the pom.xml file 
             POM_VERSION = readMavenPom().getVersion()
             POM_PACKAGING = readMavenPom().getPackaging()
-            APPLICATION_NAME = "user"
+            APPLICATION_NAME = "${pipelineParams.appName}"
             SONAR_URL = "http://34.30.23.85:9000"
             // SONAR_TOKEN = credentials('sonar_creds')
 
