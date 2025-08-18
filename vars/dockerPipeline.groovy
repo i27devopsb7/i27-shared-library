@@ -1,6 +1,4 @@
 // This pipeline is for product microservice deployment
-import com.i27academy.builds.Calculator
-
 def call(Map pipelineParams) {
     pipeline {
         agent {
