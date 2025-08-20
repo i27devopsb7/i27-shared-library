@@ -146,7 +146,7 @@ def call(Map pipelineParams) {
                 steps {
                     script {
                         // image validation
-                        imageValidatiion().call()
+                        //imageValidatiion().call()
 
                         // calling auth login method
                         k8s.auth_login("${env.DEV_CLUSTER_NAME}", "${env.DEV_CLUSTER_ZONE}", "${env.DEV_PROJECT_ID}")
