@@ -147,7 +147,10 @@ def call(Map pipelineParams) {
                     script {
                         // image validation
                         imageValidatiion().call()
-                        dockerDeploy('dev', '5232').call()
+
+                        // calling auth login method
+                        k8s.auth_login("${env.DEV_CLUSTER_NAME}", "${env.DEV_CLUSTER_ZONE}", "${env.DEV_PROJECT_ID}")
+                        k8s.k8sdeploy()
                     }
                 }
             }
@@ -278,9 +281,7 @@ def imageValidatiion() {
     }
 }
 
-def k8sdeploy(){
-    return 
-}
+
 
 //  hostport:containerport
 

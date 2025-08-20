@@ -16,5 +16,15 @@ class K8s {
             kubectl get ns
         """
     }
+
+
+    // Method to deploy applications
+    def k8sdeploy(){
+        jenkins.sh """
+            echo "Deploying to k8s cluster"
+            ls -la
+            ls -la .cicd
+        """
+    }
 }
 
