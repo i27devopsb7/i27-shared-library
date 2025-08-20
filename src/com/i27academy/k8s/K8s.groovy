@@ -22,8 +22,7 @@ class K8s {
     def k8sdeploy(){
         jenkins.sh """
             echo "Deploying to k8s cluster"
-            ls -la
-            ls -la .cicd
+            kubectl apply -f ./.cicd/k8s_dev.yaml -n cart-dev-ns
         """
     }
 }
