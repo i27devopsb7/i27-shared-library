@@ -33,6 +33,20 @@ def call(Map pipelineParams) {
             DEV_CLUSTER_ZONE = "us-central1-a"
             DEV_PROJECT_ID = "fluid-analogy-463508-r4"
 
+
+            // File name for deployments 
+            K8S_DEV_FILE = "k8s_dev.yaml"
+            K8S_TEST_FILE = "k8s_test.yaml"
+            K8S_STAGE_FILE = "k8s_stage.yaml"
+            K8S_PROD_FILE = "k8s_prd.yaml"
+
+
+            // namespace definition 
+            DEV_NAMESPACE = "cart-dev-ns"
+            TEST_NAMESPACE = "cart-test-ns"
+            STAGE_NAMESPACE = "cart-stage-ns"
+            PROD_NAMESPACE = "cart-prod-ns"
+
         }
 
         // parameters
@@ -147,10 +161,11 @@ def call(Map pipelineParams) {
                     script {
                         // image validation
                         //imageValidatiion().call()
-
+                        def docker_image  =  "${env.DOCKER_HUB}/${env.APPLICATION_NAME}:$GIT_COMMIT"
                         // calling auth login method
                         k8s.auth_login("${env.DEV_CLUSTER_NAME}", "${env.DEV_CLUSTER_ZONE}", "${env.DEV_PROJECT_ID}")
-                        k8s.k8sdeploy()
+                        imageValidatiion().call()
+                        k8s.k8sdeploy("${env.K8S_DEV_FILE}", docker_image, "${env.DEV_NAMESPACE}")
                     }
                 }
             }
