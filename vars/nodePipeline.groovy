@@ -205,7 +205,7 @@ def dockerDeploy(envDeploy, port){
 def dockerBuildAndPush() {
     return {
         echo "************* Building the Docker image ***************"
-        sh "docker build --no-cache -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:$GIT_COMMIT ./.cicd"
+        sh "docker build --no-cache -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:$GIT_COMMIT ."
         echo "******************************************** Docker Login *********************************"
         sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}"
         echo "******************************************** Docker Push *********************************"
