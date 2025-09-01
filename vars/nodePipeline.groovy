@@ -19,9 +19,13 @@ def call(Map pipelineParams) {
 
             APPLICATION_NAME = "${pipelineParams.appName}"
 
-            DOCKER_HUB = "docker.io/i27devopsb7"
-            DOCKER_CREDS = credentials('dockerhub_creds')
+            // DOCKER_HUB = "docker.io/i27devopsb7"
+            // DOCKER_CREDS = credentials('dockerhub_creds')
 
+            // JFROG details
+            JFROG_DOCKER_REGISTRY = "i27k8sb15.jfrog.io"
+            JFROG_DOCKER_REPO_NAME = "private-docker"
+            JFROG_CREDS = credentials("JFROG_CREDS")
 
             // Kubernetes Dev cluster details
             DEV_CLUSTER_NAME = "cart-cluster"
@@ -96,7 +100,7 @@ def call(Map pipelineParams) {
                     script {
                         // image validation
                         //imageValidatiion().call()
-                        def docker_image  =  "${env.DOCKER_HUB}/${env.APPLICATION_NAME}:$GIT_COMMIT"
+                        def docker_image  =  "${env.JFROG_DOCKER_REGISTRY}/${env.JFROG_DOCKER_REPO_NAME}/${env.APPLICATION_NAME}:$GIT_COMMIT"
                         // calling auth login method
                         k8s.auth_login("${env.DEV_CLUSTER_NAME}", "${env.DEV_CLUSTER_ZONE}", "${env.DEV_PROJECT_ID}")
                         imageValidatiion().call()
@@ -205,11 +209,12 @@ def dockerDeploy(envDeploy, port){
 def dockerBuildAndPush() {
     return {
         echo "************* Building the Docker image ***************"
-        sh "docker build --no-cache -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:$GIT_COMMIT ."
+        sh "cp target/i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} ./.cicd"
+        sh "docker build --no-cache --build-arg JAR_SOURCE=i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} -t ${env.JFROG_DOCKER_REGISTRY}/${env.JFROG_DOCKER_REPO_NAME}/${env.APPLICATION_NAME}:$GIT_COMMIT ./.cicd"
         echo "******************************************** Docker Login *********************************"
-        sh "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}"
+        sh "docker login -u ${JFROG_CREDS_USR} -p ${JFROG_CREDS_PSW} i27k8sb15.jfrog.io"
         echo "******************************************** Docker Push *********************************"
-        sh "docker push ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:$GIT_COMMIT"
+        sh "docker push ${env.JFROG_DOCKER_REGISTRY}/${env.JFROG_DOCKER_REPO_NAME}/${env.APPLICATION_NAME}:$GIT_COMMIT"
     }
 }
 
@@ -217,12 +222,14 @@ def imageValidatiion() {
     return {
         println ("***************************** Attempt to pull the docker image *********************")
         try {
-            sh "docker pull ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:$GIT_COMMIT"
+            sh "docker pull ${env.JFROG_DOCKER_REGISTRY}/${env.JFROG_DOCKER_REPO_NAME}/${env.APPLICATION_NAME}:$GIT_COMMIT"
             println("********************** Image is Pulled Succesfully *************************")
         }
         catch(Exception e) {
             println("*************** OOPS, the docker image is not available...... So creating the image")
+            buildApp().call()
             dockerBuildAndPush().call()
+
         }
 
     }
