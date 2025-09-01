@@ -211,7 +211,7 @@ def dockerDeploy(envDeploy, port){
 def dockerBuildAndPush() {
     return {
         echo "************* Building the Docker image ***************"
-        sh "docker build --no-cache -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:$GIT_COMMIT ."
+        sh "docker build --no-cache -t ${env.JFROG_DOCKER_REGISTRY}/${env.JFROG_DOCKER_REPO_NAME}/${env.APPLICATION_NAME}:$GIT_COMMIT ."
         echo "******************************************** Docker Login *********************************"
         sh "docker login -u ${JFROG_CREDS_USR} -p ${JFROG_CREDS_PSW} i27k8sb15.jfrog.io"
         echo "******************************************** Docker Push *********************************"
