@@ -180,9 +180,11 @@ def call(Map pipelineParams) {
             }
                 steps {
                     script{
+                        def docker_image  =  "${env.JFROG_DOCKER_REGISTRY}/${env.JFROG_DOCKER_REPO_NAME}/${env.APPLICATION_NAME}:$GIT_COMMIT"
+                        k8s.auth_login("${env.TEST_CLUSTER_NAME}", "${env.TEST_CLUSTER_ZONE}", "${env.TEST_PROJECT_ID}")
                         // image validation
                         imageValidatiion().call()
-                        dockerDeploy('test', '6232').call()
+                        k8s.k8sdeploy("${env.K8S_TEST_FILE}", docker_image, "${env.TEST_NAMESPACE}")
                     }
                 }
             }
@@ -200,9 +202,11 @@ def call(Map pipelineParams) {
                 }
                 steps {
                     script{
+                        def docker_image  =  "${env.JFROG_DOCKER_REGISTRY}/${env.JFROG_DOCKER_REPO_NAME}/${env.APPLICATION_NAME}:$GIT_COMMIT"
+                        k8s.auth_login("${env.STAGE_CLUSTER_NAME}", "${env.STAGE_CLUSTER_ZONE}", "${env.STAGE_PROJECT_ID}")
                         // image validation
                         imageValidatiion().call()
-                        dockerDeploy('stage', '7232').call()
+                        k8s.k8sdeploy("${env.K8S_STAGE_FILE}", docker_image, "${env.STAGE_NAMESPACE}")
                     }
                 }
             }
@@ -226,7 +230,11 @@ def call(Map pipelineParams) {
                     }
                     
                     script{
-                        dockerDeploy('prod', '8232').call()
+                        def docker_image  =  "${env.JFROG_DOCKER_REGISTRY}/${env.JFROG_DOCKER_REPO_NAME}/${env.APPLICATION_NAME}:$GIT_COMMIT"
+                        k8s.auth_login("${env.PROD_CLUSTER_NAME}", "${env.PROD_CLUSTER_ZONE}", "${env.PROD_PROJECT_ID}")
+                        // image validation
+                        imageValidatiion().call()
+                        k8s.k8sdeploy("${env.K8S_PROD_FILE}", docker_image, "${env.PROD_NAMESPACE}")
                     }
                 }
             }
